@@ -30,17 +30,25 @@ class _MyHomePageState extends State {
 
   static final int BOARD_COUNT = 9;
   GameState currentGameState = GameState.RUNNING;
-  Map<String, Color> _colors;
+  Map<String, Color> _boardColors;
+
+  Map<GameState, Color> _stateColors;
 
   List boardStates = new List(BOARD_COUNT);
 
   _MyHomePageState() {
     _init();
 
-    _colors = new Map();
-    _colors['X'] = Colors.red[100];
-    _colors['O'] = Colors.blue[100];
-    _colors[''] = Colors.grey[100];
+    _boardColors = new Map();
+    _boardColors['X'] = Colors.red[100];
+    _boardColors['O'] = Colors.blue[100];
+    _boardColors[''] = Colors.grey[100];
+
+    _stateColors = new Map();
+    _stateColors[GameState.X_WIN] = Colors.red[100];
+    _stateColors[GameState.O_WIN] = Colors.blue[100];
+    _stateColors[GameState.RUNNING] = Colors.green[100];
+    _stateColors[GameState.DRAW] = Colors.orange[100];
   }
 
   void _setBoardState(int index) {
@@ -175,46 +183,74 @@ class _MyHomePageState extends State {
         ),
         body: Column(
           children: [
-            Container(
-              padding: EdgeInsets.all(20),
-              child: Text(
-                '$_player is turn',
-                style: Theme.of(context).textTheme.display1,
-              ),
-            ),
-            Expanded(
-                child: GridView.count(
-              crossAxisCount: 3,
-              children: List.generate(BOARD_COUNT, (index) {
-                return Container(
-                    padding: EdgeInsets.all(5),
-                    child: FlatButton(
-                      color: _colors[''],
-                      disabledColor: _colors[boardStates[index]],
-                      child: Text(
-                        boardStates[index],
-                        style: Theme.of(context).textTheme.display1,
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Card(
+                child: Row(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Game State : '),
+                          Text(
+                            currentGameState.toString().split('.').last,
+                            style: Theme.of(context).textTheme.display1,
+                            
+                          )
+                        ],
                       ),
-                      onPressed: currentGameState == GameState.RUNNING &&
-                              boardStates[index] == ''
-                          ? () => _setBoardState(index)
-                          : null,
-                    ));
-              }),
-            )),
-            Container(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  Text('Game State'),
-                  Text(currentGameState.toString().split('.').last)
-                ],
+                    ),
+                    Container(
+                        padding: EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('Player Turn : '),
+                            Text(
+                              '$_player',
+                              style: Theme.of(context).textTheme.display1,
+                            ),
+                          ],
+                        )),
+                  ],
+                ),
               ),
             ),
-            RaisedButton(
-              onPressed: _clear,
-              child: Text('Reset'),
-            )
+            Container(
+              child: GridView.count(
+                shrinkWrap: true,
+                crossAxisCount: 3,
+                children: List.generate(BOARD_COUNT, (index) {
+                  return Container(
+                      padding: EdgeInsets.all(10),
+                      child: FlatButton(
+                        color: _boardColors[''],
+                        disabledColor: _boardColors[boardStates[index]],
+                        child: Text(
+                          boardStates[index],
+                          style: Theme.of(context).textTheme.display2,
+                        ),
+                        onPressed: currentGameState == GameState.RUNNING &&
+                                boardStates[index] == ''
+                            ? () => _setBoardState(index)
+                            : null,
+                      ));
+                }),
+              ),
+            ),
+            SizedBox(
+                //Match_Parent
+                height: 60.0,
+                width: double.infinity,
+                child: RaisedButton(
+                  color: currentGameState == GameState.RUNNING
+                      ? Colors.blue[200]
+                      : Colors.red[200],
+                  onPressed: _clear,
+                  child: Text('Reset'),
+                ))
           ],
         ));
     return scaffold;
