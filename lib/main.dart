@@ -77,7 +77,6 @@ class _MyHomePageState extends State {
 
   void updateGameState() {
     setState(() {
-//check Col
       for (int i = 0; i < 3; i++) {
         String compared = boardStates[i * 3];
         bool equals = true;
@@ -179,27 +178,28 @@ class _MyHomePageState extends State {
             Container(
               padding: EdgeInsets.all(20),
               child: Text(
-                'It is $_player is turn',
+                '$_player is turn',
                 style: Theme.of(context).textTheme.display1,
               ),
             ),
             Expanded(
                 child: GridView.count(
-// Create a grid with 2 columns. If you change the scrollDirection to
-// horizontal, this produces 2 rows.
               crossAxisCount: 3,
-// Generate 100 widgets that display their index in the List.
               children: List.generate(BOARD_COUNT, (index) {
                 return Container(
-                  padding: EdgeInsets.all(5),
-                  child: FlatButton(
-                      color: _colors[boardStates[index]],
+                    padding: EdgeInsets.all(5),
+                    child: FlatButton(
+                      color: _colors[''],
+                      disabledColor: _colors[boardStates[index]],
                       child: Text(
                         boardStates[index],
                         style: Theme.of(context).textTheme.display1,
                       ),
-                      onPressed: () => _setBoardState(index)),
-                );
+                      onPressed: currentGameState == GameState.RUNNING &&
+                              boardStates[index] == ''
+                          ? () => _setBoardState(index)
+                          : null,
+                    ));
               }),
             )),
             Container(
